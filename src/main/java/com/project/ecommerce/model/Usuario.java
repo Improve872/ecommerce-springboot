@@ -1,40 +1,41 @@
 package com.project.ecommerce.model;
+
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.util.List;
 
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 public class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
-    private Integer idUsuario;
+    private Integer id;
 
-    @Column(nullable = false, length = 100)
     private String nombre;
-
-    @Column(nullable = false, unique = true, length = 320)
     private String correo;
+    private String contrasena;
 
-    @Column(name = "contraseña", nullable = false, length = 60)
-    private String contraseña; // se usará con BCrypt
+    @OneToMany(mappedBy = "usuario")
+    @JsonManagedReference
+    private List<Carrito> carritos;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Rol rol = Rol.CLIENTE;
-
-    @Column(name = "fecha_registro", nullable = false)
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
-
-    private Boolean activo = true;
-
-    // --- Getters y Setters ---
-    public Integer getIdUsuario() {
-        return idUsuario;
+    public Usuario() {
     }
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
+    public Usuario(String nombre, String correo, String contrasena) {
+        this.nombre = nombre;
+        this.correo = correo;
+        this.contrasena = contrasena;
+    }
+
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getNombre() {
@@ -53,40 +54,19 @@ public class Usuario {
         this.correo = correo;
     }
 
-    public String getContraseña() {
-        return contraseña;
+    public String getContrasena() {
+        return contrasena;
     }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
     }
 
-    public Rol getRol() {
-        return rol;
+    public List<Carrito> getCarritos() {
+        return carritos;
     }
 
-    public void setRol(Rol rol) {
-        this.rol = rol;
-    }
-
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
-
-    public Boolean getActivo() {
-        return activo;
-    }
-
-    public void setActivo(Boolean activo) {
-        this.activo = activo;
-    }
-
-    // --- Enum interno para roles ---
-    public enum Rol {
-        CLIENTE, ADMIN
+    public void setCarritos(List<Carrito> carritos) {
+        this.carritos = carritos;
     }
 }

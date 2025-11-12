@@ -16,7 +16,6 @@ public class Producto {
     private Integer stock;
     private Boolean disponible;
 
-    // Getters y Setters
     public Integer getIdProducto() {
         return idProducto;
     }

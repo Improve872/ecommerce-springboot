@@ -17,7 +17,7 @@ public class ProductoController {
 
     @GetMapping
     public List<Producto> listarProductos() {
-        return productoService.listarTodos(); // ✅ nombre corregido
+        return productoService.listarTodos();
     }
 
     @GetMapping("/{id}")
@@ -27,7 +27,7 @@ public class ProductoController {
 
     @PostMapping
     public Producto guardarProducto(@RequestBody Producto producto) {
-        return productoService.guardar(producto); // ✅ nombre corregido
+        return productoService.guardar(producto); //
     }
 
     @PutMapping("/{id}")
