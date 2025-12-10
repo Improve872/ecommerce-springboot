@@ -1,66 +1,61 @@
 package com.project.ecommerce.model;
+
 import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "productos")
-
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Producto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idProducto;
+    @Column(name = "id")
+    private Integer id;
 
-    private String nombre;
+    @Column(nullable = false)
+    private String name;
+
     private String descripcion;
-    private Double precio;
+
+    @Column(nullable = false)
+    private BigDecimal precio;
+
+    @Column(nullable = false)
     private Integer stock;
+
+    @Column(nullable = false)
     private Boolean disponible;
 
-    public Integer getIdProducto() {
-        return idProducto;
-    }
+    // 🛑 CAMBIO CRÍTICO: Usar EAGER para garantizar que se cargue junto al carrito.
+    @ManyToOne(fetch = FetchType.EAGER) // ⬅️ ¡CAMBIADO a EAGER!
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoryEntity;
 
-    public void setIdProducto(Integer idProducto) {
-        this.idProducto = idProducto;
-    }
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
-    public String getNombre() {
-        return nombre;
-    }
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public Double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public Boolean getDisponible() {
-        return disponible;
-    }
-
-    public void setDisponible(Boolean disponible) {
-        this.disponible = disponible;
+    @PrePersist
+    protected void onCreate() {
+        if (this.fechaCreacion == null) {
+            this.fechaCreacion = LocalDateTime.now();
+        }
     }
 }
+
+
+
+
+
+
+
+
+

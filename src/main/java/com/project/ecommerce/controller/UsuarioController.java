@@ -1,37 +1,68 @@
 package com.project.ecommerce.controller;
 
-import com.project.ecommerce.model.Usuario;
+import com.project.ecommerce.dto.UsuarioDTO;
+import com.project.ecommerce.dto.RegistroRequestDTO;
 import com.project.ecommerce.service.UsuarioService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/v1/users") // NUEVA RUTA PARA EVITAR CONFLICTOS
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
 
+    // ---------------------- GET USER LOGGED ----------------------
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UsuarioDTO> getUsuarioActual(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String correo = principal.getName();
+        return ResponseEntity.ok(usuarioService.obtenerPorCorreo(correo));
+    }
+
+    // ---------------------- LIST USERS (ADMIN) ----------------------
     @GetMapping
-    public List<Usuario> listarUsuarios() {
-        return usuarioService.listarTodos();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UsuarioDTO>> listarTodos() {
+        return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    // GET por ID
     @GetMapping("/{id}")
-    public Optional<Usuario> obtenerUsuario(@PathVariable Integer id) {
-        return usuarioService.obtenerPorId(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsuarioDTO> obtenerPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(usuarioService.obtenerPorId(id));
     }
 
-    @PostMapping
-    public Usuario guardarUsuario(@RequestBody Usuario usuario) {
-        return usuarioService.guardar(usuario);
+    // UPDATE user
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(
+            @PathVariable Integer id,
+            @RequestBody RegistroRequestDTO dto) {
+
+        return ResponseEntity.ok(usuarioService.actualizarDatos(id, dto));
     }
 
+    // DELETE user
     @DeleteMapping("/{id}")
-    public void eliminarUsuario(@PathVariable Integer id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         usuarioService.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }
+
+
+
