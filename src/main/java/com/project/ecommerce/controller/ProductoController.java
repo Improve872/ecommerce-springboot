@@ -17,8 +17,7 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
-    // 1. GET /productos?category=...&search=... (PÚBLICO)
-    // El listado, filtrado y búsqueda deben ser accesibles para todos.
+    // listado filtrar busqueda deben ser accesibles para todos
     @GetMapping
     public ResponseEntity<List<ProductoDTO>> listarTodosOFiltrar(
             @RequestParam(required = false) String category,
@@ -28,7 +27,7 @@ public class ProductoController {
         return ResponseEntity.ok(productos);
     }
 
-    // 2. GET /productos/{id} (PÚBLICO)
+
     @GetMapping("/{id}")
     public ResponseEntity<ProductoDTO> obtenerPorId(@PathVariable Integer id) {
         try {
@@ -39,42 +38,41 @@ public class ProductoController {
         }
     }
 
-    // 3. POST /productos (PROTEGIDO: Solo ADMIN)
+    // solo admin
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')") // 🔒 RESTRICCIÓN DE SEGURIDAD
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductoDTO> guardar(@RequestBody ProductoDTO dto) {
         try {
             ProductoDTO savedDto = productoService.guardar(dto);
-            return new ResponseEntity<>(savedDto, HttpStatus.CREATED); // 201 Created
+            return new ResponseEntity<>(savedDto, HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            // Captura errores si la Categoría ID no existe (lanzado por el servicio)
-            // Usamos 400 ya que el dato de entrada (categoría ID) es incorrecto.
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // 400 Bad Request
+            // si la Categoría id no existe
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 
-    // 4. PUT /productos/{id} (PROTEGIDO: Solo ADMIN)
+    // solo admin
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // 🔒 RESTRICCIÓN DE SEGURIDAD
+    @PreAuthorize("hasRole('ADMIN')") //
     public ResponseEntity<ProductoDTO> actualizar(@PathVariable Integer id, @RequestBody ProductoDTO dto) {
         try {
             ProductoDTO updatedDto = productoService.actualizar(id, dto);
-            return ResponseEntity.ok(updatedDto); // 200 OK
+            return ResponseEntity.ok(updatedDto);
         } catch (RuntimeException e) {
-            // Captura errores si el Producto ID o la Categoría ID no existen
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // 404 Not Found
+            //  si el producto id o la categoria id no existen
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
-    // 5. DELETE /productos/{id} (PROTEGIDO: Solo ADMIN)
+    // solo admin
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')") // 🔒 RESTRICCIÓN DE SEGURIDAD
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         try {
             productoService.eliminar(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build(); // 404 Not Found (si el producto no existe)
+            return ResponseEntity.notFound().build();
         }
     }
 }

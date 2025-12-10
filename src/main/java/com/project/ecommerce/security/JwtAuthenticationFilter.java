@@ -19,14 +19,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtils jwtUtils;
     private final UserDetailsServiceImpl userDetailsService;
 
-    // 🛑 Rutas a ignorar por este filtro (TODAS las que pusiste en permitAll)
+    // rutas ignoradas por este filtro , todas para que funcione por el momento
     private static final String[] EXCLUDED_PATHS_PREFIXES = {
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/pedidos/crear",
             "/api/v1/carritos",
-            "/api/v1/productos", // Si quieres que el GET a productos pase
-            "/api/v1/categorias" // Si quieres que el GET a categorías pase
+            "/api/v1/productos",
+            "/api/v1/categorias"
     };
 
     public JwtAuthenticationFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
@@ -34,13 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    // 🛑 MÉTODO CRÍTICO: Si devuelve TRUE, el filtro NO se ejecuta.
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
 
         for (String excludedPath : EXCLUDED_PATHS_PREFIXES) {
-            // Usamos startsWith para manejar el wildcard '/**' del SecurityConfig
             if (path.startsWith(excludedPath)) {
                 return true;
             }
@@ -52,13 +50,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        // Si shouldNotFilter es TRUE, este método es ignorado, pero filterChain.doFilter() se llama automáticamente.
+        // si shouldnofilter es true este metodo es ignorado
 
         try {
             String token = parseJwt(request);
 
             if (token != null) {
-                // ... (La lógica de autenticación JWT solo se ejecuta si hay token) ...
+                // logica de autenticacion, se ejecuta si hay token
                 String username = jwtUtils.getUsernameFromToken(token);
 
                 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -77,8 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception ex) {
-            // Esto solo se ejecuta si la ruta está protegida Y el token es inválido.
-            System.err.println("❌ ERROR DE AUTENTICACIÓN JWT EN EL FILTRO: " + ex.getMessage());
+            // excepciones
+            System.err.println(" error de autenticacion JWT en el filtro: " + ex.getMessage());
             SecurityContextHolder.clearContext();
         }
 

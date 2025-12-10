@@ -32,8 +32,7 @@ public class Producto {
     @Column(nullable = false)
     private Boolean disponible;
 
-    // 🛑 CAMBIO CRÍTICO: Usar EAGER para garantizar que se cargue junto al carrito.
-    @ManyToOne(fetch = FetchType.EAGER) // ⬅️ ¡CAMBIADO a EAGER!
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private Categoria categoryEntity;
 

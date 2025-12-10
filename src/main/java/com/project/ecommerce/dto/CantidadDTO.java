@@ -5,8 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Data
-@NoArgsConstructor // Clave para Jackson
-@AllArgsConstructor // Clave para Jackson
+@NoArgsConstructor
+@AllArgsConstructor
 public class CantidadDTO {
 
     private int cantidad;

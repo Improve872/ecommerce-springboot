@@ -17,17 +17,17 @@ public class DataInitializer implements CommandLineRunner {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder; // Inyectamos el codificador de AppConfig
+    private BCryptPasswordEncoder passwordEncoder; // inyeccion del codificador de appconfig
 
     @Override
     public void run(String... args) throws Exception {
-        // Verificar si ya existe un usuario admin
+        // verificar si existe usuario admin
         if (usuarioRepository.findByCorreoIgnoreCase("admin@ecommerce.com").isEmpty()) {
 
-            // 1. Encriptar la contraseña
+            // encriptar la  contraseña
             String hashedPassword = passwordEncoder.encode("admin123");
 
-            // 2. Crear el objeto Usuario
+            // crear objeto usuario
             Usuario admin = Usuario.builder()
                     .nombre("Administrador Principal")
                     .correo("admin@ecommerce.com")
@@ -37,18 +37,18 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaRegistro(LocalDateTime.now())
                     .build();
 
-            // 3. Guardar en la base de datos
+            // guardar en la bd
             usuarioRepository.save(admin);
             System.out.println("ADMINISTRADOR INICIAL REGISTRADO: admin@ecommerce.com / admin123");
         }
 
-        // Verificar si ya existe un usuario cliente
+        // verificar si existe un usuario cliente
         if (usuarioRepository.findByCorreoIgnoreCase("cliente@ecommerce.com").isEmpty()) {
 
-            // 1. Encriptar la contraseña
+            // encriptar contraseña
             String hashedPassword = passwordEncoder.encode("cliente123");
 
-            // 2. Crear el objeto Usuario
+            // crear objeto usuario
             Usuario cliente = Usuario.builder()
                     .nombre("Cliente de Prueba")
                     .correo("cliente@ecommerce.com")
@@ -58,7 +58,7 @@ public class DataInitializer implements CommandLineRunner {
                     .fechaRegistro(LocalDateTime.now())
                     .build();
 
-            // 3. Guardar en la base de datos
+            // guardar en la bd
             usuarioRepository.save(cliente);
             System.out.println("CLIENTE INICIAL REGISTRADO: cliente@ecommerce.com / cliente123");
         }

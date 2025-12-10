@@ -12,23 +12,21 @@ import java.util.List;
 
 @RestController
 // URL Base: /api/v1/categorias
-// Nota: La base /api/v1/ se define generalmente en application.properties o en la clase principal.
+
 @RequestMapping("/api/v1/categorias")
 public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
 
-    // 1. OBTENER TODOS (PÚBLICO)
-    // No necesita @PreAuthorize, ya que permitimos el acceso a /categorias/** en SecurityConfig
+    // obtener todos
+    // no necesita @PreAuthorize
     @GetMapping
     public ResponseEntity<List<CategoriaDTO>> listarTodos() {
-        // En tu implementación original no devolvías ResponseEntity,
-        // pero es buena práctica devolverlo para control HTTP 200 OK.
         return ResponseEntity.ok(categoriaService.listarTodos());
     }
 
-    // 2. OBTENER POR ID (PÚBLICO)
+    // obtener por id
     @GetMapping("/{id}")
     public ResponseEntity<CategoriaDTO> obtenerPorId(@PathVariable Integer id) {
         try {
@@ -40,7 +38,7 @@ public class CategoriaController {
         }
     }
 
-    // 3. CREAR CATEGORÍA (PROTEGIDO: Solo ADMIN)
+    // crear categoria solo admin
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')") // 🔒 Solo el rol ADMIN puede acceder
     public ResponseEntity<CategoriaDTO> guardar(@RequestBody CategoriaDTO dto) {
@@ -48,7 +46,7 @@ public class CategoriaController {
         return new ResponseEntity<>(savedDto, HttpStatus.CREATED); // 201 Created
     }
 
-    // 4. ACTUALIZAR CATEGORÍA (PROTEGIDO: Solo ADMIN)
+    // actualizar categoria solo admin
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')") // 🔒 Solo el rol ADMIN puede acceder
     public ResponseEntity<CategoriaDTO> actualizar(@PathVariable Integer id, @RequestBody CategoriaDTO dto) {
@@ -61,16 +59,16 @@ public class CategoriaController {
         }
     }
 
-    // 5. ELIMINAR CATEGORÍA (PROTEGIDO: Solo ADMIN)
+    // eliminar categoria solo admin
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')") // 🔒 Solo el rol ADMIN puede acceder
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
-        // Usamos try/catch para manejar la excepción si el ID no existe
+        // por si el id no existe
         try {
             categoriaService.eliminar(id);
             return ResponseEntity.noContent().build(); // 204 No Content
         } catch (Exception e) {
-            // Si hay un error (ej. el ID no existe o no se pudo eliminar)
+
             return ResponseEntity.notFound().build();
         }
     }

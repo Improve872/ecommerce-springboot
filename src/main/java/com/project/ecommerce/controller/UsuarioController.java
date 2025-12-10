@@ -14,13 +14,13 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users") // NUEVA RUTA PARA EVITAR CONFLICTOS
+@RequestMapping("/api/v1/users")
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
 
-    // ---------------------- GET USER LOGGED ----------------------
+    // get user para logueados
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioDTO> getUsuarioActual(Principal principal) {
@@ -31,21 +31,21 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerPorCorreo(correo));
     }
 
-    // ---------------------- LIST USERS (ADMIN) ----------------------
+    // lista usuarios para admin
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioDTO>> listarTodos() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
-    // GET por ID
+    // get por id
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> obtenerPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(usuarioService.obtenerPorId(id));
     }
 
-    // UPDATE user
+    // update usuario
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioDTO> actualizarUsuario(
@@ -55,7 +55,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizarDatos(id, dto));
     }
 
-    // DELETE user
+    // delete usuario
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {

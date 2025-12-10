@@ -28,15 +28,15 @@ public class CarritoDetalleService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    // ⚠️ MÉTODO CRÍTICO: Agrega o actualiza un producto en el carrito (une lógica de guardar y actualizar)
+    // agrega o actualiza un producto en el carrito
     public CarritoDetalleDTO agregarOActualizarItem(CarritoDetalleDTO dto) {
-        // 1. Obtener Carrito y Producto
+        //  obtener carrito y producto
         Carrito carrito = carritoRepository.findById(dto.getIdCarrito())
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado."));
         Producto producto = productoRepository.findById(dto.getIdProducto())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado."));
 
-        // 2. Buscar si ya existe este producto en este carrito (usa el método que añadiste)
+        // buscar si el producto existe en el carrito
         Optional<CarritoDetalle> existingDetalle = carritoDetalleRepository
                 .findByCarritoIdCarritoAndProductoId(carrito.getIdCarrito(), producto.getId());
 
@@ -44,11 +44,11 @@ public class CarritoDetalleService {
         Integer cantidadAAgregar = dto.getCantidad() != null ? dto.getCantidad() : 1;
 
         if (existingDetalle.isPresent()) {
-            // 3a. ACTUALIZAR: Sumar la cantidad
+            // sumar la cantidad
             detalle = existingDetalle.get();
             detalle.setCantidad(detalle.getCantidad() + cantidadAAgregar);
         } else {
-            // 3b. CREAR: Nuevo detalle
+            // crear nuevo detalle
             detalle = CarritoDetalle.builder()
                     .carrito(carrito)
                     .producto(producto)
@@ -56,15 +56,15 @@ public class CarritoDetalleService {
                     .build();
         }
 
-        // 4. CALCULAR SUBTOTAL: El subtotal es siempre calculado por el backend
+        // calcular subtotal
         detalle.setSubtotal(producto.getPrecio().multiply(new BigDecimal(detalle.getCantidad())));
 
-        // 5. Guardar
+        // guardar
         CarritoDetalle savedDetalle = carritoDetalleRepository.save(detalle);
         return Mapper.toCarritoDetalleDTO(savedDetalle);
     }
 
-    // ⚠️ Modificación del método actualizar para cambiar la cantidad directamente
+    // metodo para cambiar la cantidad directamente
     public CarritoDetalleDTO modificarCantidad(Integer idDetalle, Integer nuevaCantidad) {
         return carritoDetalleRepository.findById(idDetalle)
                 .map(detalle -> {
@@ -73,12 +73,11 @@ public class CarritoDetalleService {
                         return null; // Ítem eliminado
                     }
 
-                    // Asegurar que el precio del producto se use para el cálculo
                     Producto producto = detalle.getProducto();
 
                     detalle.setCantidad(nuevaCantidad);
 
-                    // Recalcular subtotal
+                    // recalcular subtotal
                     detalle.setSubtotal(producto.getPrecio().multiply(new BigDecimal(nuevaCantidad)));
 
                     CarritoDetalle updated = carritoDetalleRepository.save(detalle);
@@ -87,7 +86,7 @@ public class CarritoDetalleService {
                 .orElseThrow(() -> new RuntimeException("Detalle de Carrito no encontrado."));
     }
 
-    // Métodos CRUD básicos restantes...
+    // metodos crud restantes
 
     public List<CarritoDetalleDTO> listarTodos() {
         return carritoDetalleRepository.findAll().stream()

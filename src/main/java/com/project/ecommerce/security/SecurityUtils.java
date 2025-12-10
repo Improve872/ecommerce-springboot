@@ -20,7 +20,6 @@ public class SecurityUtils {
             return ((UserDetails) principal).getUsername();
         }
 
-        // 🛑 ESTO ES CLAVE: Si el Principal no es UserDetails, es el String del correo
         if (principal instanceof String && !principal.equals("anonymousUser")) {
             return (String) principal;
         }

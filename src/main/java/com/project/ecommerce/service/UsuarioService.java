@@ -22,68 +22,66 @@ public class UsuarioService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    // --- MÉTODOS DE BÚSQUEDA ---
+    // metodos busqueda
 
-    /**
-     * Obtiene el ID del usuario a partir de su correo. Usado por los controladores protegidos (ej. Carrito).
-     */
+
+     // obtiene el id del usuario a partir de su correo
+
     public Integer getUserIdByEmail(String email) {
         return usuarioRepository.findByCorreoIgnoreCase(email)
                 .map(Usuario::getId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con correo: " + email));
     }
 
-    /**
-     * Obtiene el DTO de un usuario a partir de su correo (Usado por el endpoint /me).
-     */
+
+     // obtiene el dto de un usuario a partir de su correo
+
     public UsuarioDTO obtenerPorCorreo(String correo) {
         return usuarioRepository.findByCorreoIgnoreCase(correo)
                 .map(Mapper::toUsuarioDTO)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con correo: " + correo));
     }
 
-    // Listar todos los usuarios (CRUD)
+    // listar los usuarios
     public List<UsuarioDTO> listarTodos() {
         return usuarioRepository.findAll().stream()
                 .map(Mapper::toUsuarioDTO)
                 .collect(Collectors.toList());
     }
 
-    // Obtener usuario por ID (CRUD)
+    // obtener usuario por id
     public UsuarioDTO obtenerPorId(Integer id) {
         return usuarioRepository.findById(id)
                 .map(Mapper::toUsuarioDTO)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
     }
 
-    // --- MÉTODOS DE MODIFICACIÓN ---
+    // metodos de modificacion
 
     @Transactional
     public UsuarioDTO registrar(RegistroRequestDTO dto) {
 
-        // 1. Validación de unicidad de correo
         if (usuarioRepository.findByCorreoIgnoreCase(dto.getCorreo()).isPresent()) {
             throw new RuntimeException("El correo ya está registrado: " + dto.getCorreo());
         }
 
-        // 2. Validación de contraseña
+        // validar contraseña
         if (dto.getContrasena() == null || dto.getContrasena().isEmpty()) {
             throw new RuntimeException("La contraseña es obligatoria para el registro.");
         }
 
-        // 3. Mapear DTO a Entidad (Asignar nombre/correo)
+        // mapear dto a entidad
         Usuario usuario = Mapper.toUsuarioEntity(dto);
 
-        // 🛑 Corrección crítica: Asignar Rol y Activo
         usuario.setRol(com.project.ecommerce.model.RolUsuario.CLIENTE);
         usuario.setActivo(true);
 
-        // 5. Encriptar contraseña y setear
+        // encriptar contraseña y setear
         usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
 
         Usuario savedUser = usuarioRepository.save(usuario);
 
-        // 6. Devolver DTO de salida
+        // devolver dto
         return Mapper.toUsuarioDTO(savedUser);
     }
 
@@ -92,10 +90,10 @@ public class UsuarioService {
 
         return usuarioRepository.findById(id).map(usuario -> {
 
-            // 1. Actualizar campos básicos
+            // actualizar campos
             if (dto.getNombre() != null) usuario.setNombre(dto.getNombre());
 
-            // 2. Actualizar correo si cambia y verificar unicidad
+            // actualizar correo y verificar
             if (dto.getCorreo() != null && !usuario.getCorreo().equalsIgnoreCase(dto.getCorreo())) {
                 if (usuarioRepository.findByCorreoIgnoreCase(dto.getCorreo()).isPresent()) {
                     throw new RuntimeException("El nuevo correo ya está en uso.");
@@ -103,7 +101,7 @@ public class UsuarioService {
                 usuario.setCorreo(dto.getCorreo());
             }
 
-            // 3. Actualizar contraseña solo si viene nueva
+            // actualizar contraseña si es nueva
             if (dto.getContrasena() != null && !dto.getContrasena().isEmpty()) {
                 usuario.setContrasena(passwordEncoder.encode(dto.getContrasena()));
             }

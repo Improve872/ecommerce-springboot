@@ -26,9 +26,7 @@ public class CarritoController {
     @Autowired
     private SecurityUtils securityUtils;
 
-    // --- MÉTODOS DEL USUARIO (Requiere token) ---
-
-    // 🛑 1. OBTENER CARRITO ACTUAL DEL USUARIO LOGUEADO
+    //  obtener carrito de usuario logueado
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CarritoDTO> getCarritoActual() {
@@ -44,7 +42,7 @@ public class CarritoController {
         }
     }
 
-    // 🛑 2. AÑADIR/ACTUALIZAR PRODUCTO AL CARRITO
+    // añadir actualizar producto
     @PostMapping("/agregar")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CarritoDTO> agregarProductoAlCarrito(@RequestBody CarritoDetalleDTO detalleDto) {
@@ -61,28 +59,28 @@ public class CarritoController {
         }
     }
 
-    // 🛑 3. ACTUALIZAR CANTIDAD DE UN DETALLE (USANDO EL NUEVO DTO)
+    // actualizar cantidad de un detalle
     @PutMapping("/actualizar/{detalleId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CarritoDTO> actualizarCantidad(
             @PathVariable Integer detalleId,
-            @RequestBody CantidadDTO cantidadDto) { // Usando el DTO importado
+            @RequestBody CantidadDTO cantidadDto) {
 
         try {
             String userEmail = securityUtils.getCurrentUserEmail();
             Integer userId = usuarioService.getUserIdByEmail(userEmail);
 
-            // 🛑 CORRECCIÓN: Usar el getter de Lombok .getCantidad()
+
             CarritoDTO carritoActualizado = carritoService.actualizarCantidad(detalleId, cantidadDto.getCantidad(), userId);
 
             return ResponseEntity.ok(carritoActualizado);
         } catch (RuntimeException e) {
-            // Captura Detalle no encontrado o acceso denegado
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+            // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
-    // 🛑 4. ELIMINAR UN DETALLE (ÍTEM) DEL CARRITO
+    // eliminar un detalle
     @DeleteMapping("/eliminar-detalle/{detalleId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CarritoDTO> eliminarDetalle(@PathVariable Integer detalleId) {
@@ -94,12 +92,12 @@ public class CarritoController {
 
             return ResponseEntity.ok(carritoActualizado);
         } catch (RuntimeException e) {
-            // Captura Detalle no encontrado o acceso denegado
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
         }
     }
 
-    // 🛑 5. VACIAR EL CARRITO COMPLETO
+    // vaciar el carrito
     @DeleteMapping("/vaciar")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CarritoDTO> vaciarCarrito() {
@@ -116,25 +114,25 @@ public class CarritoController {
     }
 
 
-    // ---------------------- Métodos CRUD (Acceso solo Admin) ----------------------
+    //  Métodos CRUD acceso solo admin
 
-    // 6. LISTAR TODOS LOS CARRITOS (Solo ADMIN)
+    // listar todos los carritos
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<CarritoDTO>> listarTodos() {
         return ResponseEntity.ok(carritoService.listarTodos());
     }
 
-    // 7. ELIMINAR CARRITO POR ID (Solo ADMIN)
+    // eliminar carrito por id
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         try {
             carritoService.eliminar(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build(); // 204
         } catch (RuntimeException e) {
-            // Capturamos el error si el ID no existe
-            return ResponseEntity.notFound().build(); // 404 Not Found
+
+            return ResponseEntity.notFound().build(); // 404
         }
     }
 }

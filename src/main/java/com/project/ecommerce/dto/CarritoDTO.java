@@ -15,9 +15,7 @@ public class CarritoDTO {
     private Integer idCarrito;
     private Integer idUsuario;
 
-    // ✅ NUEVO: Lista de ítems en el carrito (mapeados desde CarritoDetalle)
     private List<CarritoDetalleDTO> detalles;
 
-    // ✅ NUEVO: Total calculado por el mapper
     private BigDecimal totalGeneral;
 }

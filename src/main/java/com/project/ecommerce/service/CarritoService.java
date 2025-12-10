@@ -35,7 +35,7 @@ public class CarritoService {
     @Autowired
     private CarritoDetalleRepository carritoDetalleRepository;
 
-    // --- MÉTODOS DE BÚSQUEDA Y CREACIÓN DEL CARRITO ---
+    // metodos de busqueda y creacion del carrito
 
     @Transactional
     public CarritoDTO getOrCreateCarritoByUser(Integer usuarioId) {
@@ -62,7 +62,7 @@ public class CarritoService {
                 });
     }
 
-    // --- LÓGICA DE NEGOCIO PRINCIPAL ---
+    // logica
 
     @Transactional
     public CarritoDTO agregarProducto(Integer userId, CarritoDetalleDTO detalleDto) {
@@ -110,26 +110,26 @@ public class CarritoService {
         return Mapper.toCarritoDTO(carritoActualizado);
     }
 
-    // --- NUEVOS MÉTODOS DE MANIPULACIÓN ---
+    // metodos de manipulacion
 
-    /**
-     * Actualiza la cantidad de un producto específico en el carrito.
-     */
+
+     // actualiza la cantidad de un producto específico en el carrito
+
     @Transactional
     public CarritoDTO actualizarCantidad(Integer detalleId, int nuevaCantidad, Integer userId) {
         CarritoDetalle detalle = carritoDetalleRepository.findById(detalleId)
                 .orElseThrow(() -> new RuntimeException("Detalle de Carrito no encontrado con ID: " + detalleId));
 
-        // Verificación de seguridad
+        // verificación
         if (!detalle.getCarrito().getUsuario().getId().equals(userId)) {
             throw new RuntimeException("Acceso denegado: El detalle no pertenece al usuario.");
         }
 
         if (nuevaCantidad <= 0) {
-            // Si la nueva cantidad es 0 o menos, lo eliminamos
+            // si la cantidad es 0 o menos se elimina
             carritoDetalleRepository.delete(detalle);
         } else {
-            // Actualizar cantidad y recalcular subtotal
+            // actualizar cantidad y recalcular subtotal
             detalle.setCantidad(nuevaCantidad);
 
             if (detalle.getProducto().getPrecio() == null) {
@@ -142,7 +142,7 @@ public class CarritoService {
             carritoDetalleRepository.save(detalle);
         }
 
-        // Recargar y devolver el carrito actualizado
+        // recargar y devolver el carrito actualizado
         Carrito carritoActualizado = carritoRepository.findById(detalle.getCarrito().getIdCarrito())
                 .orElseThrow(() -> new RuntimeException("Error interno al obtener carrito."));
 
@@ -150,25 +150,23 @@ public class CarritoService {
     }
 
 
-    /**
-     * Elimina una línea de producto del carrito por el ID del detalle.
-     */
+
+     // elimina una línea de producto del carrito por el id del detalle
+
     @Transactional
     public CarritoDTO eliminarDetalle(Integer detalleId, Integer userId) {
         CarritoDetalle detalle = carritoDetalleRepository.findById(detalleId)
                 .orElseThrow(() -> new RuntimeException("Detalle de Carrito no encontrado con ID: " + detalleId));
 
-        // Verificación de seguridad
         if (!detalle.getCarrito().getUsuario().getId().equals(userId)) {
             throw new RuntimeException("Acceso denegado: El detalle no pertenece al usuario.");
         }
 
         Carrito carrito = detalle.getCarrito();
 
-        // Eliminar el detalle
+        // Eliminar detalle
         carritoDetalleRepository.delete(detalle);
 
-        // Recargar y devolver el carrito actualizado
         Carrito carritoActualizado = carritoRepository.findById(carrito.getIdCarrito())
                 .orElseThrow(() -> new RuntimeException("Error interno al obtener carrito."));
 
@@ -176,20 +174,18 @@ public class CarritoService {
     }
 
 
-    /**
-     * Vacía completamente el carrito de un usuario.
-     */
+    // vacia el carrito de un usuario
+
     @Transactional
     public CarritoDTO vaciarCarrito(Integer userId) {
         Carrito carrito = getOrCreateCarritoEntityByUser(userId);
 
-        // Eliminar todos los detalles
+        // eliminar los detalles
         carritoDetalleRepository.deleteAll(carrito.getDetalles());
 
-        // Limpiar la lista de detalles en la entidad (opcional, pero buena práctica)
         carrito.getDetalles().clear();
 
-        // Recargar y devolver el carrito vaciado
+        // devolver carrito vacio
         Carrito carritoActualizado = carritoRepository.findById(carrito.getIdCarrito())
                 .orElseThrow(() -> new RuntimeException("Error interno al obtener carrito."));
 
@@ -197,7 +193,7 @@ public class CarritoService {
     }
 
 
-    // --- MÉTODOS CRUD BÁSICOS (USO ADMINISTRATIVO) ---
+    // metodos crud admin
 
     public List<CarritoDTO> listarTodos() {
         return carritoRepository.findAll().stream()

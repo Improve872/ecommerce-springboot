@@ -44,7 +44,7 @@ public class PedidoService {
 
         BigDecimal total = BigDecimal.ZERO;
 
-        // Convertimos CarritoDetalle → PedidoDetalle
+
         for (CarritoDetalle cd : carrito.getDetalles()) {
             PedidoDetalle pd = PedidoDetalle.builder()
                     .pedido(pedido)

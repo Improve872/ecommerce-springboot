@@ -15,43 +15,39 @@ import java.util.function.Function;
 @Component
 public class JwtUtils {
 
-    // 1. INYECTAR desde application.properties
-    // Asegúrate de que este nombre (jwt.secret) coincida con tu archivo de propiedades.
+    //  inyectar desde properties
     @Value("${jwt.secret}")
     private String SECRET_KEY_STRING;
 
-    // 2. INYECTAR el tiempo de validez
-    // El valor debe estar en milisegundos (ms).
+    //  inyectar el tiempo de validez
     @Value("${jwt.expirationMs}")
-    private long JWT_TOKEN_VALIDITY; // El nombre del campo lo cambié para que refleje la inyección.
+    private long JWT_TOKEN_VALIDITY;
 
-    // Método privado para convertir la cadena de clave en SecretKey (necesario para JJWT)
+    // metodo para convertir la cadena de clave en secretkey , para jwt
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());
     }
 
-    // Obtener username (Subject) del token
+    // obtener username del token
     public String getUsernameFromToken(String token) {
         try {
             return getClaimFromToken(token, Claims::getSubject);
         } catch (Exception e) {
-            // Manejo de errores simplificado. Si no puede obtenerlo, retorna null.
+            // sino puede obtenerlo retorna null
             return null;
         }
     }
 
-    // Obtener expiración del token
+    // obtener expiracion del token
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
-    // Resolver cualquier claim específico del token
     public <T> T getClaimFromToken(String token, Function<Claims, T> resolver) {
         final Claims claims = getAllClaimsFromToken(token);
         return resolver.apply(claims);
     }
 
-    // Parser principal para obtener todos los Claims
     private Claims getAllClaimsFromToken(String token) {
         // Usa el parser para construir la clave de firma y validar el token
         return Jwts.parserBuilder()
@@ -61,37 +57,34 @@ public class JwtUtils {
                 .getBody();
     }
 
-    // Verifica si el token ha expirado
+    // verifica si el token expiro
     private Boolean isTokenExpired(String token) {
         Date expiration = getExpirationDateFromToken(token);
-        // Retorna verdadero si la fecha de expiración es anterior a la fecha actual
         return expiration != null && expiration.before(new Date());
     }
 
-    // Generar token (usado en el login)
+    // genera token usado en login
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Puedes añadir roles u otra información útil aquí
         claims.put("roles", userDetails.getAuthorities());
-
         return doGenerateToken(claims, userDetails.getUsername());
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(subject) // Generalmente el correo electrónico o ID
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Validación de token (usado en el filtro JWT)
+    // validacion de token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
 
-        // Verifica que el username exista, que coincida con el UserDetails y que no haya expirado
+        // verifica que el username exista, que coincida con userdetails y que no haya expirado
         return (username != null &&
                 username.equals(userDetails.getUsername()) &&
                 !isTokenExpired(token));

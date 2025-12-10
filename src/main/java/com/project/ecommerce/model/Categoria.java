@@ -17,14 +17,9 @@ public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_categoria")
-    private Integer id; // Usamos 'id' en Java
-
-    // ⚠️ Mapeamos la columna 'nombre' de la BD a la propiedad 'name'
+    private Integer id;
     @Column(name = "nombre")
     private String name;
-
     private String descripcion;
 
-    // Si tu tabla no tiene más campos, este modelo está listo.
-    // Si tu tabla tiene la columna 'descripcion', esta línea es correcta.
 }

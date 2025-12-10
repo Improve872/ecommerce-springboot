@@ -22,16 +22,14 @@ public class ProductoService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    // --- Métodos de Lectura (GET) ---
-
-    // 🛑 Método principal para listar (sin filtros)
+    // metodo para listar sin filtros
     public List<ProductoDTO> listarTodos() {
         return productoRepository.findAll().stream()
                 .map(Mapper::toProductoDTO)
                 .collect(Collectors.toList());
     }
 
-    // Método para la lógica de filtrado (usado por el controlador)
+    // metodo parar la logica de filtrado
     public List<ProductoDTO> getFilteredProducts(String category, String search) {
 
         List<Producto> products;
@@ -59,32 +57,31 @@ public class ProductoService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
     }
 
-    // --- Métodos de Modificación (POST, PUT, DELETE) ---
+    // metodos post put delete
 
-    @Transactional // ✅ Asegura que la operación sea atómica (o se completa o se revierte)
+    @Transactional
     public ProductoDTO guardar(ProductoDTO dto) {
-        // 1. Validar y Obtener la Categoria (Falla con 404 si no existe)
+
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no válida con ID: " + dto.getCategoriaId()));
 
-        // 2. Mapear, usar la Categoria obtenida para la relación
         Producto producto = Mapper.toProductoEntity(dto, categoria);
         Producto savedProduct = productoRepository.save(producto);
 
-        // 3. Devolver DTO
+        // devolver dto
         return Mapper.toProductoDTO(savedProduct);
     }
 
-    @Transactional // ✅ Asegura que la operación sea atómica
+    @Transactional
     public ProductoDTO actualizar(Integer id, ProductoDTO dto) {
 
-        // 1. Validar que la categoría exista antes de intentar actualizar
+        // validar que la  categoria exista
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no válida con ID: " + dto.getCategoriaId()));
 
         return productoRepository.findById(id).map(producto -> {
 
-            // 2. Actualizar campos
+            // actualizar campos
             producto.setName(dto.getName());
             producto.setDescripcion(dto.getDescripcion());
             producto.setPrecio(dto.getPrecio());
@@ -93,16 +90,15 @@ public class ProductoService {
             producto.setImageUrl(dto.getImageUrl());
             producto.setCategoryEntity(categoria); // 🔗 Asignar la FK
 
-            // 3. Guardar y devolver DTO
+            // guardar y devolver dto
             Producto updatedProduct = productoRepository.save(producto);
             return Mapper.toProductoDTO(updatedProduct);
 
         }).orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
     }
 
-    @Transactional // ✅ Asegura que la operación sea atómica
+    @Transactional
     public void eliminar(Integer id) {
-        // 🛑 Mejorar la gestión de la excepción 404 para el controlador
         if (!productoRepository.existsById(id)) {
             throw new RuntimeException("Producto no encontrado con ID: " + id);
         }

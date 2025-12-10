@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
 
 
-    // Buscar el carrito asociado al ID de usuario.
+    // buscar al carrito asociado al id del usuario
 
     Optional<Carrito> findByUsuarioId(Integer usuarioId);
 

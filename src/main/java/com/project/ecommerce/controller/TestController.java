@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')") // Solo usuarios con el rol ADMIN pueden acceder
+    @PreAuthorize("hasRole('ADMIN')") // solo usuarios con rol admin acceden
     public String adminAccess() {
         return "Contenido restringido solo para Administradores.";
     }

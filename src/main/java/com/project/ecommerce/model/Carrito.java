@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import lombok.Builder; // Asegúrate de tener este import
+import lombok.Builder;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -25,22 +25,18 @@ public class Carrito {
     @Column(name = "id_carrito")
     private Integer idCarrito;
 
-    // 🛑 EAGER: Necesario para que el Mapper pueda obtener el ID del usuario fuera de la transacción.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_usuario")
     @JsonBackReference
     private Usuario usuario;
 
-    // 🛑 @Builder.Default: CRÍTICO. Garantiza que el valor 'true' se use con el builder.
     @Builder.Default
     @Column(nullable = false)
     private Boolean activo = true;
 
-    // 🛑 @Builder.Default: CRÍTICO. Garantiza que la fecha se use con el builder.
     @Builder.Default
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
-    // 🛑 EAGER y @Builder.Default: Necesario para evitar LazyException y NullPointerException al mapear DTO.
     @Builder.Default
     @OneToMany(
             mappedBy = "carrito",
@@ -51,8 +47,7 @@ public class Carrito {
     @JsonManagedReference
     private List<CarritoDetalle> detalles = new ArrayList<>();
 
-    // El @PrePersist ya no es estrictamente necesario gracias a @Builder.Default,
-    // pero puede dejarse como doble seguridad.
+    // ya no es tannecesario
     @PrePersist
     protected void onCreate() {
         if (this.activo == null) {

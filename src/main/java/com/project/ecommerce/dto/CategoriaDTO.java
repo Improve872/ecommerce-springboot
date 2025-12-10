@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-// DTO para enviar información de categorías al frontend
 @Data
 @Builder
 @NoArgsConstructor

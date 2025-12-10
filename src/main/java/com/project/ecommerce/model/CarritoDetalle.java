@@ -10,10 +10,10 @@ import lombok.Builder; // ⚠️ NUEVO: Patrón Builder
 
 @Entity
 @Table(name = "carrito_detalle")
-@Data // ⬅️ Reemplaza todos los Getters y Setters manuales
-@NoArgsConstructor // ⬅️ Constructor por defecto (requerido por JPA)
-@AllArgsConstructor // ⬅️ Constructor con todos los campos
-@Builder // ⬅️ Patrón de construcción
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CarritoDetalle {
 
     @Id
@@ -21,16 +21,14 @@ public class CarritoDetalle {
     @Column(name = "id_detalle")
     private Integer idDetalle;
 
-    // Relación ManyToOne con el Carrito padre
     @ManyToOne
     @JoinColumn(name = "id_carrito")
     @JsonBackReference
     private Carrito carrito;
 
-    // Relación ManyToOne con el Producto
-    @ManyToOne(fetch = FetchType.EAGER) // 🛑 APLICA O VERIFICA ESTO
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto")
-    @JsonBackReference // O el que uses para evitar ciclos JSON
+    @JsonBackReference
     private Producto producto;
 
     private Integer cantidad;

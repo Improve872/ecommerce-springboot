@@ -16,8 +16,7 @@ public class CarritoDetalleController {
     @Autowired
     private CarritoDetalleService detalleService;
 
-    // POST /carrito-detalles/agregar
-    // ⚠️ Usa el método de lógica de negocio para AGREGAR O ACTUALIZAR (suma la cantidad)
+
     @PostMapping("/agregar")
     public ResponseEntity<CarritoDetalleDTO> agregarOActualizarItem(@RequestBody CarritoDetalleDTO dto) {
         try {
@@ -30,8 +29,7 @@ public class CarritoDetalleController {
         }
     }
 
-    // PUT /carrito-detalles/{id}/cantidad?value=...
-    // ⚠️ Usa el método de lógica de negocio para MODIFICAR CANTIDAD (incluye eliminación si es 0)
+
     @PutMapping("/{id}/cantidad")
     public ResponseEntity<CarritoDetalleDTO> modificarCantidad(
             @PathVariable Integer id,
@@ -39,7 +37,7 @@ public class CarritoDetalleController {
         try {
             CarritoDetalleDTO updatedDto = detalleService.modificarCantidad(id, value);
 
-            // Si el servicio devuelve null (cantidad <= 0), significa que el ítem fue eliminado
+            // si el servicio devuelve null significa que el ítem fue eliminado
             if (updatedDto == null) {
                 return ResponseEntity.noContent().build(); // 204 No Content
             }
@@ -50,15 +48,15 @@ public class CarritoDetalleController {
         }
     }
 
-    // ---------------------- Métodos CRUD (Acceso solo Admin) ----------------------
+    // -metodos solo admin
 
-    // GET /carrito-detalles
+
     @GetMapping
     public List<CarritoDetalleDTO> listarTodos() {
         return detalleService.listarTodos();
     }
 
-    // GET /carrito-detalles/{id}
+
     @GetMapping("/{id}")
     public ResponseEntity<CarritoDetalleDTO> obtenerPorId(@PathVariable Integer id) {
         try {
@@ -69,7 +67,7 @@ public class CarritoDetalleController {
         }
     }
 
-    // DELETE /carrito-detalles/{id}
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         detalleService.eliminar(id);

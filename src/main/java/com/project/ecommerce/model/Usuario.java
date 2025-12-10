@@ -3,15 +3,14 @@ package com.project.ecommerce.model;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.time.LocalDateTime;
-import java.util.Collection; // Importar Collection
-import java.util.Collections; // Importar Collections
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-// Imports de Spring Security
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails; // Importar UserDetails
@@ -32,8 +31,6 @@ public class Usuario implements UserDetails {
     private String nombre;
     private String correo;
 
-    // Se asume que la corrección de la BD a 'contrasena' (sin tilde) funcionó
-    // o que estás usando el nombre que fuerza tu IDE. Usaremos el nombre que mejor coincide con la BD.
     @Column(name = "contrasena", nullable = false, length = 60)
     private String contrasena; // La contraseña hasheada
 
@@ -45,12 +42,11 @@ public class Usuario implements UserDetails {
 
     private Boolean activo;
 
-    // Relación One-to-Many con Carrito
+    // realacion con carrito
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Carrito> carritos;
 
-    // --- Lógica del Ciclo de Vida JPA (PrePersist) ---
     @PrePersist
     protected void onCreate() {
         if (this.activo == null) {
@@ -61,13 +57,12 @@ public class Usuario implements UserDetails {
         }
     }
 
-    // =======================================================
-    // 🛡️ IMPLEMENTACIÓN DE USERDETAILS PARA SPRING SECURITY
-    // =======================================================
+
+    // implementacion de userdetails para security
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Convierte el RolUsuario (ej. CLIENTE o ADMIN) en una autoridad de Spring Security (ej. ROLE_CLIENTE)
+        // convierte el rolusuario en una autoridad de spring security
         return Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + this.rol.name())
         );
@@ -75,37 +70,32 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getPassword() {
-        // Devuelve la contraseña hasheada almacenada en la BD
+        // devuelve la contraseña hasheada almacenada en la bd
         return this.contrasena;
     }
 
     @Override
     public String getUsername() {
-        // Spring Security usará el correo como nombre de usuario para el login
         return this.correo;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        // Dejar como true si no implementas lógica de expiración de cuenta
         return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        // Dejar como true si no implementas lógica de bloqueo de cuenta
         return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        // Dejar como true si no implementas lógica de expiración de credenciales
         return true;
     }
 
     @Override
     public boolean isEnabled() {
-        // 🛑 CORRECCIÓN: Si 'activo' es null, tratamos la cuenta como deshabilitada (false).
         return this.activo != null && this.activo;
     }
 }

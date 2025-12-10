@@ -23,7 +23,6 @@ public class Pedido {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    // 🛑 CAMBIO CLAVE: Mapeamos la variable al nombre de la columna en la BD.
     @Column(name = "fecha_pedido")
     @Builder.Default
     private LocalDateTime fechaPedido = LocalDateTime.now(); // Renombrado de fechaCreacion a fechaPedido para consistencia

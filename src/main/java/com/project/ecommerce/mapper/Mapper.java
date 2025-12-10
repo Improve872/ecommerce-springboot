@@ -10,8 +10,8 @@ public final class Mapper {
 
     private Mapper() {}
 
-    // ---------------------- USUARIO ----------------------
-    // Usado para mapear la Entidad (con contrasena) a DTO (sin contrasena)
+    // usuario
+    // para mapear la entidad con contraseña a dto sin contraseña
     public static UsuarioDTO toUsuarioDTO(Usuario usuario) {
         if (usuario == null) return null;
         return UsuarioDTO.builder()
@@ -24,7 +24,7 @@ public final class Mapper {
                 .build();
     }
 
-    // Usado para mapear DTO de REGISTRO (sin contrasena, ya que debe venir de un DTO de Request)
+    // para mapear dto de registro sin contrasena, debe venir de un dto request
     public static Usuario toUsuarioEntity(UsuarioDTO dto) {
         if (dto == null) return null;
         return Usuario.builder()
@@ -33,21 +33,19 @@ public final class Mapper {
                 .correo(dto.getCorreo())
                 .rol(dto.getRol())
                 .activo(dto.getActivo() != null ? dto.getActivo() : true)
-                // ⚠️ NOTA: La contrasena debe ser seteada por el servicio al hashearla
                 .build();
     }
 
-    // ---------------------- USUARIO / REGISTRO ----------------------
+    // usuario registro
     public static Usuario toUsuarioEntity(RegistroRequestDTO dto) {
         if (dto == null) return null;
         return Usuario.builder()
                 .nombre(dto.getNombre())
                 .correo(dto.getCorreo())
-                // ⚠️ La contraseña NO se mapea aquí, el Servicio la hashea después.
                 .build();
     }
 
-    // ---------------------- CATEGORIA ----------------------
+    // categoria
     public static CategoriaDTO toCategoriaDTO(Categoria categoria) {
         if (categoria == null) return null;
         return CategoriaDTO.builder()
@@ -66,8 +64,8 @@ public final class Mapper {
                 .build();
     }
 
-    // ---------------------- PRODUCTO ----------------------
-    // Usado para listar y obtener detalles (Frontend necesita el nombre de la categoría)
+    // producto
+    // para listar y obtener detalles si el fronted necesita
     public static ProductoDTO toProductoDTO(Producto producto) {
         if (producto == null) return null;
         return ProductoDTO.builder()
@@ -84,7 +82,7 @@ public final class Mapper {
                 .build();
     }
 
-    // Usado para operaciones de CRUD (Requiere la Entidad Categoria)
+    // para operaciones crud requiere entidad  categoria
     public static Producto toProductoEntity(ProductoDTO dto, Categoria categoria) {
         if (dto == null) return null;
         Producto producto = Producto.builder()
@@ -102,8 +100,8 @@ public final class Mapper {
         return producto;
     }
 
-    // ---------------------- CARRITO ----------------------
-    // ✅ MEJORA: Mapea la lista de detalles y calcula el total general
+    // carrito
+    // mapea lista de detalles  y calcula total
     public static CarritoDTO toCarritoDTO(Carrito carrito) {
         if (carrito == null) return null;
 
@@ -139,7 +137,7 @@ public final class Mapper {
                 .build();
     }
 
-    // ---------------------- CARRITO DETALLE ----------------------
+    // carrito detalle
     public static CarritoDetalleDTO toCarritoDetalleDTO(CarritoDetalle detalle) {
         if (detalle == null) return null;
         return CarritoDetalleDTO.builder()
@@ -172,7 +170,7 @@ public final class Mapper {
                 .build();
     }
 
-    // ---------------------- PEDIDO ----------------------
+    // pedido
     public static PedidoDTO toPedidoDTO(Pedido pedido) {
         if (pedido == null) return null;
 
