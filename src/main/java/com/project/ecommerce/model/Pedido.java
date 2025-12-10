@@ -25,8 +25,7 @@ public class Pedido {
 
     @Column(name = "fecha_pedido")
     @Builder.Default
-    private LocalDateTime fechaPedido = LocalDateTime.now(); // Renombrado de fechaCreacion a fechaPedido para consistencia
-
+    private LocalDateTime fechaPedido = LocalDateTime.now();
     @Enumerated(EnumType.STRING)
     private EstadoPedido estado;
 
