@@ -70,7 +70,7 @@ public class UsuarioService {
             throw new RuntimeException("La contraseña es obligatoria para el registro.");
         }
 
-        // mapear dto a entidad
+        // mapear dto a cantidad
         Usuario usuario = Mapper.toUsuarioEntity(dto);
 
         usuario.setRol(com.project.ecommerce.model.RolUsuario.CLIENTE);

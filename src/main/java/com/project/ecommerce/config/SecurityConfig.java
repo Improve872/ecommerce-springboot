@@ -1,5 +1,6 @@
 package com.project.ecommerce.config;
 
+// ... (Todas tus importaciones existentes) ...
 import com.project.ecommerce.security.JwtAuthenticationEntryPoint;
 import com.project.ecommerce.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <-- ¡Asegúrate de tener esta importación!
+
 
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,7 @@ public class SecurityConfig {
         this.authenticationProvider = authenticationProvider;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -55,7 +59,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
 
                         // 🛑 3. Endpoints de PEDIDOS (CREACIÓN - POST) - FORZAMOS PERMITALL
-                        // Esto debe resolver el 401 para /api/v1/pedidos/crear/9
                         .requestMatchers(HttpMethod.POST, "/api/v1/pedidos/crear/**").permitAll()
 
                         // 🛑 4. Endpoints de CARRITO (TODAS LAS OPERACIONES) - FORZAMOS PERMITALL
